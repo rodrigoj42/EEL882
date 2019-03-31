@@ -1,0 +1,6 @@
+#buttons {
+  display: flex;
+  max-width: 400px;
+  justify-content: space-between;
+  margin-bottom: 10px;
+}
