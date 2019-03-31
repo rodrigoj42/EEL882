@@ -1,4 +1,4 @@
-var shapes = [[]];
+var shapes = [new Shape()];
 var shapeCursor = 0;
 
 var phaseSelection, showIntersections;
@@ -43,28 +43,21 @@ function changePhase() {
 function draw() {
   background(220);
   for (let i = 0; i < shapes.length; i++) {
-    let shape = shapes[i]
-    beginShape();
-    shape.forEach(v => {
-      vertex(v.x, v.y)
-    });
-    if (phase == phaseOptions[0] && i == shapeCursor) {
-      vertex(mouseX, mouseY)
-    }
-    endShape(CLOSE);
+    let shape = shapes[i];
+    let isLast = (i == shapeCursor && phase == phaseOptions[0]);
+    shape.draw(isLast);
   }
 }
 
 function interactions() {
   if (phase == phaseOptions[0]) {
-    shapes[shapeCursor].push({
-      x: mouseX,
-      y: mouseY
-    });
+    shapes[shapeCursor].addVertex(
+      new Vertex(mouseX, mouseY)
+    );
   }
 }
 
 function doubleClicked() {
-  shapes.push([]);
+  shapes.push(new Shape());
   shapeCursor += 1;
 }
