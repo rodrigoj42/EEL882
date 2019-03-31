@@ -1,14 +1,26 @@
+var fillColor;
+var canvasSize = {
+  width: 400,
+  height: 400
+}
+
 var shapes = [new Shape()];
 var shapeCursor = 0;
+
+var rays = []
+var rayCursor = 0;
 
 var phaseSelection, showIntersections;
 var phaseOptions = ['Insert Shape', 'Insert Ray', 'Edit Mode']
 var phase = phaseOptions[0];
 
 function setup() {
-  let canvas = createCanvas(400, 400);
+  let canvas = createCanvas(canvasSize.width, canvasSize.height);
   canvas.parent('canvas');
-  canvas.mousePressed(interactions)
+  // click interactions should only occur inside canvas
+  canvas.mousePressed(click);
+  canvas.doubleClicked(doubleClick);
+  //frameRate(5)
   background(220);
 
   phaseSelection = createSelect();
@@ -16,28 +28,24 @@ function setup() {
   phaseOptions.forEach(option => {
     phaseSelection.option(option)
   });
-  phaseSelection.changed(changePhase)
+  phaseSelection.changed(function() {
+    phase = phaseOptions[phaseSelection.elt.selectedIndex]
+    console.log(phase)
+  })
 
   showIntersections = createButton('Show Intersections');
   showIntersections.parent('buttons')
-  showIntersections.mousePressed(toggleIntersections)
+  showIntersections.mousePressed(function() {
+    if (showIntersections.elt.textContent == 'Show Intersections') {
+      showIntersections.elt.textContent = 'Hide Intersections';
+    } else {
+      showIntersections.elt.textContent = 'Show Intersections'
+    }
+  })
 
-  let c = color('#FF0000')
-  c.setAlpha(100);
-  fill(c)
-}
-
-function toggleIntersections() {
-  if (showIntersections.elt.textContent == 'Show Intersections') {
-    showIntersections.elt.textContent = 'Hide Intersections';
-  } else {
-    showIntersections.elt.textContent = 'Show Intersections'
-  }
-}
-
-function changePhase() {
-  phase = phaseOptions[phaseSelection.elt.selectedIndex]
-  console.log(phase)
+  fillColor = color('#FF0000')
+  fillColor.setAlpha(100);
+  fill(fillColor)
 }
 
 function draw() {
@@ -47,17 +55,34 @@ function draw() {
     let isLast = (i == shapeCursor && phase == phaseOptions[0]);
     shape.draw(isLast);
   }
+  rays.forEach(r => {
+   r.draw() 
+  });
 }
 
-function interactions() {
-  if (phase == phaseOptions[0]) {
-    shapes[shapeCursor].addVertex(
-      new Vertex(mouseX, mouseY)
-    );
+function click() {
+  switch (phase) {
+    case phaseOptions[0]:
+      shapes[shapeCursor].addVertex(
+        new Vertex(mouseX, mouseY)
+      );
+      break
+    case phaseOptions[1]:
+      rays.push(new Ray(mouseX, mouseY)) 
+      break
+    case phaseOptions[2]:
+      break
   }
 }
 
-function doubleClicked() {
+function mouseReleased() {
+  if (phase == phaseOptions[1] && rays[rayCursor]) {
+    rays[rayCursor].direction(mouseX, mouseY)
+    rayCursor += 1;
+  }
+}
+
+function doubleClick() {
   shapes.push(new Shape());
   shapeCursor += 1;
 }
