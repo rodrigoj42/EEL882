@@ -5,7 +5,7 @@ class Shape {
   addVertex(vertex) {
     this.vertices.push(vertex)
   }
-  draw(isLast) {
+  draw(isLast, editMode) {
     beginShape()
     this.vertices.forEach( v => {
       vertex(v.x, v.y)
@@ -14,13 +14,20 @@ class Shape {
       vertex(mouseX, mouseY)
     }
     endShape(CLOSE)
+    if (editMode) {
+      fill('black')
+      this.vertices.forEach(v => {
+        circle(v.x, v.y, 5)
+      })
+      fill(fillColor)
+    }
   }
 }
 
 class Vertex {
   constructor(x, y) {
     this.x = x;
-    this.y = y
+    this.y = y;
   }
 }
 
@@ -30,21 +37,26 @@ class Ray {
     this.start = createVector(x, y);
     this.radius = 30;
     this.end = null;
+    this.direction = null;
   }
-  direction(x, y) {
-    this.end = p5.Vector.sub(
+  pointTo(x, y) {
+    this.direction = p5.Vector.sub(
       createVector(x, y), this.start
-      ).normalize().mult(50);
+      ).normalize().mult(40);
+    this.end = p5.Vector.add(this.start, this.direction)
   }
   draw() {
     fill('black')
     circle(this.start.x, this.start.y, 5)
-    if (this.end) {
-      drawArrow(this.start, this.end, 'blue')
+    if (this.direction) {
+      drawArrow(this.start, this.direction)
+      extendLine(this.start, this.direction)
     } else {
-      this.direction(mouseX, mouseY)
-      drawArrow(this.start, this.end, 'blue')
+      this.pointTo(mouseX, mouseY)
+      drawArrow(this.start, this.direction)
+      extendLine(this.start, this.direction)
       this.end = null;
+      this.direction = null;
     }
     fill(fillColor)
   }
@@ -60,5 +72,12 @@ function drawArrow(base, vec) {
   let arrowSize = 7;
   translate(vec.mag() - arrowSize, 0);
   triangle(0, arrowSize / 2, 0, -arrowSize / 2, arrowSize, 0);
+  pop();
+}
+
+function extendLine(base, vec) {
+  push();
+  translate(base.x, base.y);
+  line(0, 0, vec.x * 15, vec.y * 15);
   pop();
 }
