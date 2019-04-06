@@ -45,6 +45,10 @@ class Ray {
       ).normalize().mult(40);
     this.end = p5.Vector.add(this.start, this.direction)
   }
+  newPosition(x, y) {
+    this.start = createVector(x, y);
+    this.end = p5.Vector.add(this.start, this.direction)
+  }
   draw() {
     fill('black')
     circle(this.start.x, this.start.y, 5)
@@ -55,10 +59,13 @@ class Ray {
       this.pointTo(mouseX, mouseY)
       drawArrow(this.start, this.direction)
       extendLine(this.start, this.direction)
-      this.end = null;
-      this.direction = null;
+      this.clearPointer()
     }
     fill(fillColor)
+  }
+  clearPointer() {
+    this.end = null;
+    this.direction = null;
   }
 }
 
@@ -75,6 +82,7 @@ function drawArrow(base, vec) {
   pop();
 }
 
+// needs to be reworked to extend line indefinitely 
 function extendLine(base, vec) {
   push();
   translate(base.x, base.y);
