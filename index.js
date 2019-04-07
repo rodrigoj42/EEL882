@@ -11,7 +11,7 @@ var shapeCursor = 0;
 var rays = []
 var rayCursor = 0;
 
-var phaseSelection, showIntersections;
+var phaseSelection, intersectionsVisibility, showIntersections;
 var phaseOptions = ['Insert Shape', 'Insert Ray', 'Edit Mode']
 var phase = phaseOptions[0];
 
@@ -53,13 +53,15 @@ function setup() {
     console.log(phase)
   })
 
-  showIntersections = createButton('Show Intersections');
-  showIntersections.parent('buttons')
-  showIntersections.mousePressed(function() {
-    if (showIntersections.elt.textContent == 'Show Intersections') {
-      showIntersections.elt.textContent = 'Hide Intersections';
+  intersectionsVisibility = createButton('Show Intersections');
+  intersectionsVisibility.parent('buttons')
+  intersectionsVisibility.mousePressed(function() {
+    if (intersectionsVisibility.elt.textContent == 'Show Intersections') {
+      intersectionsVisibility.elt.textContent = 'Hide Intersections';
+      showIntersections = true;
     } else {
-      showIntersections.elt.textContent = 'Show Intersections'
+      intersectionsVisibility.elt.textContent = 'Show Intersections';
+      showIntersections = false;
     }
   })
 
@@ -82,7 +84,7 @@ function draw() {
 
   // draw rays
   rays.forEach(r => {
-   r.draw() 
+   r.draw(showIntersections) 
   });
 
 }
@@ -157,6 +159,7 @@ function mouseReleased() {
   if (phase == phaseOptions[1] && rays[rayCursor]) {
     rays[rayCursor].pointTo(mouseX, mouseY)
     rayCursor += 1;
+    // delete ray if mouse position is same as ray start
   }
 }
 
