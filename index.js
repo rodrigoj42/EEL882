@@ -164,7 +164,7 @@ function mouseReleased() {
 }
 
 function doubleClick() {
-  shapes[shapeCursor].vertices.pop()  // double click adds vertex twice 
+  shapes[shapeCursor].closeShape();
   shapes.push(new Shape());
   shapeCursor += 1;
 }

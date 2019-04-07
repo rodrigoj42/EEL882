@@ -8,9 +8,17 @@ class Shape {
     if (this.vertices.length > 1) {
       this.lines.push({
         start: this.vertices[this.vertices.length - 2],
-        end: vertex
+        end: this.vertices[this.vertices.length - 1]
       });
     }
+  }
+  closeShape() {
+    this.vertices.pop();
+    this.lines.pop();
+    this.lines.push({
+      start: this.vertices[this.vertices.length - 1],
+      end: this.vertices[0]
+    })
   }
   draw(isLast, editMode) {
     beginShape()
@@ -69,12 +77,20 @@ class Ray {
       line(...rayEnd)
     }
     if (showIntersections) {
+      // todo: color based on entry/exit and not line order
       shapes.forEach(s => {
+        let intersectionColor = 'green'
         s.lines.forEach(l => {
           let intersection = findIntersection(this, l);
           if (intersection) {
             if (this.checkDirection(intersection)) {
-              circle(intersection.x, intersection.y, 10)
+              if (intersectionColor == 'green') {
+                intersectionColor = 'blue'
+              } else {
+                intersectionColor = 'green'
+              }
+              fill(intersectionColor)
+              circle(intersection.x, intersection.y, 5)
             }
           }
         })
