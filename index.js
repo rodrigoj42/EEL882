@@ -3,6 +3,7 @@ var canvasSize = {
   width: 600,
   height: 600
 }
+var borderLines = []
 
 var shapes = [new Shape()];
 var shapeCursor = 0;
@@ -18,6 +19,23 @@ var editVertex, editRayPosition, editRayDirection;
 
 function setup() {
   let canvas = createCanvas(canvasSize.width, canvasSize.height);
+  borderPoints = [
+    {x: 0,   y: 0},
+    {x: 0,   y: canvasSize.height},
+    {x: canvasSize.width, y: 0},
+    {x: canvasSize.width, y: canvasSize.height}
+  ]
+  for (let start of borderPoints) {
+    for (let end of borderPoints) {
+      let borderLine = {start, end}
+      if (start != end && 
+          borderLines.indexOf(borderLine) == -1 &&
+          start.x == end.x || start.y == end.y) {
+        borderLines.push({start, end})
+      }
+    }
+  }
+
   canvas.parent('canvas');
   // click interactions should only occur inside canvas
   canvas.mousePressed(click);
