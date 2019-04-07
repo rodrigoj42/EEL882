@@ -77,22 +77,28 @@ class Ray {
       line(...rayEnd)
     }
     if (showIntersections) {
-      // todo: color based on entry/exit and not line order
       shapes.forEach(s => {
         let intersectionColor = 'green'
+        let intersections = []
         s.lines.forEach(l => {
           let intersection = findIntersection(this, l);
-          if (intersection) {
-            if (this.checkDirection(intersection)) {
-              if (intersectionColor == 'green') {
-                intersectionColor = 'blue'
-              } else {
-                intersectionColor = 'green'
-              }
-              fill(intersectionColor)
-              circle(intersection.x, intersection.y, 5)
-            }
+          if (intersection && this.checkDirection(intersection)) {
+            intersections.push(intersection)
           }
+        })
+        intersections.sort((a, b) => {
+          let distToA = dist(this.start.x, this.start.y, a.x, a.y)
+          let distToB = dist(this.start.x, this.start.y, b.x, b.y)
+          return distToA - distToB
+        })
+        intersections.forEach(i => {
+          if (intersectionColor == 'green') {
+            intersectionColor = 'blue'
+          } else {
+            intersectionColor = 'green'
+          }
+          fill(intersectionColor)
+          circle(i.x, i.y, 5)
         })
       })
     }
