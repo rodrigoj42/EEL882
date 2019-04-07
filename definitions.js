@@ -93,7 +93,8 @@ class Ray {
     for (let borderLine of borderLines) {
       var intersection = findIntersection(this, borderLine)
       if (intersection) {
-        return this.checkDirection(intersection)
+        var lineExtension = this.checkDirection(intersection)
+        if (lineExtension) return lineExtension
       }
     } return false
   }
