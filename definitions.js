@@ -100,17 +100,19 @@ class Ray {
     }
     if (showIntersections) {
       shapes.forEach(s => {
-        let intersectionColor = 'green'
-        let intersections = this.intersectionsWith(s)
-        intersections.forEach(i => {
-          if (intersectionColor == 'green') {
-            intersectionColor = 'blue'
-          } else {
-            intersectionColor = 'green'
-          }
-          fill(intersectionColor)
-          circle(i.x, i.y, 5)
-        })
+        if (s.vertices.length > 0) {
+          let intersectionColor = 'green'
+          let intersections = this.intersectionsWith(s)
+          intersections.forEach(i => {
+            if (intersectionColor == 'green') {
+              intersectionColor = 'blue'
+            } else {
+              intersectionColor = 'green'
+            }
+            fill(intersectionColor)
+            circle(i.x, i.y, 5)
+          })
+        }
       })
     }
     fill(fillColor)

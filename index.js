@@ -145,19 +145,20 @@ function click() {
       }
       // check if click is inside shape
       if (!editVertex && !editRayDirection && !editRayPosition) {
-        // is click inside of shape?
         var clickRay = new Ray(mouseX, mouseY);
         for (let s of shapes) {
-          for (let l of s.lines) {
-            let {x, y} = middlePoint(l)
-            clickRay.pointTo(x, y)
-            let intersections = clickRay.intersectionsWith(s)
-            if (intersections.length % 2 == 1) {
-              editShape = s;
-              break;
+          if (s.vertices.length > 0) {
+            for (let l of s.lines) {
+              let {x, y} = middlePoint(l)
+              clickRay.pointTo(x, y)
+              let intersections = clickRay.intersectionsWith(s)
+              if (intersections.length % 2 == 1) {
+                editShape = s;
+                break;
+              }
             }
+            if (editShape) break;
           }
-          if (editShape) break;
         }
       }
   }
