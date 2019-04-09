@@ -20,6 +20,13 @@ class Shape {
       end: this.vertices[0]
     })
   }
+  move(movementVector) {
+    this.vertices.map(v => {
+      v.x = v.x + movementVector.x
+      v.y = v.y + movementVector.y
+      return v
+    })
+  }
   draw(isLast, editMode) {
     beginShape()
     this.vertices.forEach( v => {
@@ -64,6 +71,21 @@ class Ray {
     this.start = createVector(x, y);
     this.end = p5.Vector.add(this.start, this.direction)
   }
+  intersectionsWith(shape) {
+    let intersections = []
+    shape.lines.forEach(l => {
+      let intersection = findIntersection(this, l);
+      if (intersection && this.checkDirection(intersection)) {
+        intersections.push(intersection)
+      }
+    })
+    intersections.sort((a, b) => {
+      let distToA = dist(this.start.x, this.start.y, a.x, a.y)
+      let distToB = dist(this.start.x, this.start.y, b.x, b.y)
+      return distToA - distToB
+    })
+    return intersections
+  }
   draw(showIntersections) {
     fill('black')
     circle(this.start.x, this.start.y, 5)
@@ -79,18 +101,7 @@ class Ray {
     if (showIntersections) {
       shapes.forEach(s => {
         let intersectionColor = 'green'
-        let intersections = []
-        s.lines.forEach(l => {
-          let intersection = findIntersection(this, l);
-          if (intersection && this.checkDirection(intersection)) {
-            intersections.push(intersection)
-          }
-        })
-        intersections.sort((a, b) => {
-          let distToA = dist(this.start.x, this.start.y, a.x, a.y)
-          let distToB = dist(this.start.x, this.start.y, b.x, b.y)
-          return distToA - distToB
-        })
+        let intersections = this.intersectionsWith(s)
         intersections.forEach(i => {
           if (intersectionColor == 'green') {
             intersectionColor = 'blue'

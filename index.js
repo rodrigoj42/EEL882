@@ -15,7 +15,8 @@ var phaseSelection, intersectionsVisibility, showIntersections;
 var phaseOptions = ['Insert Shape', 'Insert Ray', 'Edit Mode']
 var phase = phaseOptions[0];
 
-var editVertex, editRayPosition, editRayDirection;
+var editVertex, editRayPosition, editRayDirection, editShape;
+var lastFrameCount, ppmouseX, ppmouseY;
 
 function setup() {
   let canvas = createCanvas(canvasSize.width, canvasSize.height);
@@ -106,8 +107,10 @@ function click() {
       editVertex = null;
       editRayDirection = null;
       editRayPosition = null;
+      editShape = null;
       let found = false;
       let threshold = 10;
+      // look for vertices close to mouseClick
       let shapePoints = shapes.flatMap(
         (shape) => shape.vertices.map(
           (v) => {
@@ -125,6 +128,7 @@ function click() {
         editVertex = closestPoint.vertex;
         found = true;
       } else {
+        // look for rays close to mouseClick
         for (let i = 0; i < rays.length; i++) {
           const ray = rays[i];
           let endDistance = dist(mouseX, mouseY, ray.end.x, ray.end.y)
@@ -139,6 +143,23 @@ function click() {
           }
         }
       }
+      // check if click is inside shape
+      if (!editVertex && !editRayDirection && !editRayPosition) {
+        // is click inside of shape?
+        var clickRay = new Ray(mouseX, mouseY);
+        for (let s of shapes) {
+          for (let l of s.lines) {
+            let {x, y} = middlePoint(l)
+            clickRay.pointTo(x, y)
+            let intersections = clickRay.intersectionsWith(s)
+            if (intersections.length % 2 == 1) {
+              editShape = s;
+              break;
+            }
+          }
+          if (editShape) break;
+        }
+      }
   }
 }
 
@@ -151,6 +172,17 @@ function mouseDragged() {
       editRayDirection.pointTo(mouseX, mouseY)
     } else if (editRayPosition) {
       editRayPosition.newPosition(mouseX, mouseY)
+    } else if (editShape && frameCount != lastFrameCount) {
+      lastFrameCount = frameCount;
+      if (ppmouseX && ppmouseY) {
+        let movementVector = p5.Vector.sub(
+          createVector(pmouseX, pmouseY),
+          createVector(ppmouseX, ppmouseY)
+        );
+        editShape.move(movementVector);
+      }
+      ppmouseX = pmouseX
+      ppmouseY = pmouseY
     }
   }
 }
@@ -161,6 +193,8 @@ function mouseReleased() {
     rayCursor += 1;
     // delete ray if mouse position is same as ray start
   }
+  ppmouseX = null;
+  ppmouseY = null;
 }
 
 function doubleClick() {

@@ -11,6 +11,13 @@ function drawArrow(base, vec) {
   pop();
 }
 
+function middlePoint(l) {
+  return {
+    x: (l.start.x + l.end.x)/2,
+    y: (l.start.x + l.end.y)/2
+  }
+}
+
 // lineToExtend : {start: vector, end: vector}
 function extendToBorder(lineToExtend) {
   for (let borderLine of borderLines) {
