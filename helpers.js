@@ -29,7 +29,7 @@ function extendToBorder(lineToExtend) {
 }
 
 function SAME_SIGNS(a,b) {
-  return (a > 0) == (b > 0)
+  return (a < 0) == (b < 0)
 }
 
 // original C code by Mukesh Prasad
