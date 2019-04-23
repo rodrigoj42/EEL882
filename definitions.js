@@ -54,7 +54,6 @@ class Vertex {
 }
 
 class Ray {
-  // todo: deal with single clicks
   constructor(x, y) {
     this.start = createVector(x, y);
     this.radius = 30;
@@ -87,6 +86,10 @@ class Ray {
     return intersections
   }
   draw(showIntersections) {
+    if (this.direction && this.direction.mag() == 0) {
+      // single clicks should not be rendered
+      return
+    }
     fill('black')
     circle(this.start.x, this.start.y, 5)
     if (!this.direction) {
