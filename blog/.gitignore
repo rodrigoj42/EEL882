@@ -1,0 +1,9 @@
+_site/*
+_site
+.bundle/*
+*.swp
+*.swo
+.rvmrc
+.ruby-version
+.ruby-gemset
+.rbenv-gemsets

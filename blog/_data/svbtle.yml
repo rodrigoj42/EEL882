@@ -1,0 +1,18 @@
+---
+subtitle: "👀"
+profile_url: http://rodrigoj42.github.io/blog/
+profile_name: Rodrigo Jesus
+email_with_subject: mailto:rodrigo@senta.la
+twitter: rodrigoj42
+website_url: http://rodrigoj42.github.io/blog/
+website_url_text: Home
+#website_url_about: http://fanzy-blog.com/about
+#website_name: Home
+#feed_url: http://feedurlhere.com
+#typekit_url: typekiturlhere
+#ga_account: your-ga-code-here
+#ga_domain: svbtlejekyll.example.com
+
+# Enable kudos widget
+enable_kudos: false
+# kudos_url: http://kudos-server-example.herokuapp.com/kudos
