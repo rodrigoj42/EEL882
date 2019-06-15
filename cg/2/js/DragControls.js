@@ -91,7 +91,7 @@ THREE.DragControls = function ( _objects, _camera, _domElement ) {
 		var intersects = _raycaster.intersectObjects( _objects );
 
 		if ( intersects.length > 0 ) {
-			_selected = intersects[ 0 ].object;
+			_selected = intersects[0].object;
 			if ( _raycaster.ray.intersectPlane( _plane, _intersection ) ) {
 				_inverseMatrix.getInverse( _selected.parent.matrixWorld );
 				_offset.copy( _intersection ).sub( _worldPosition.setFromMatrixPosition( _selected.matrixWorld ) );
@@ -102,7 +102,6 @@ THREE.DragControls = function ( _objects, _camera, _domElement ) {
 	}
 
 	function onDocumentMouseCancel( event ) {
-
 		event.preventDefault();
 
 		if ( _selected ) {
@@ -113,7 +112,6 @@ THREE.DragControls = function ( _objects, _camera, _domElement ) {
 	}
 
 	function onDocumentTouchMove( event ) {
-
 		event.preventDefault();
 		event = event.changedTouches[ 0 ];
 
@@ -132,7 +130,6 @@ THREE.DragControls = function ( _objects, _camera, _domElement ) {
 	}
 
 	function onDocumentTouchStart( event ) {
-
 		event.preventDefault();
 		event = event.changedTouches[ 0 ];
 
@@ -142,7 +139,6 @@ THREE.DragControls = function ( _objects, _camera, _domElement ) {
 		_raycaster.setFromCamera( _mouse, _camera );
 
 		var intersects = _raycaster.intersectObjects( _objects );
-
 		if ( intersects.length > 0 ) {
 			_selected = intersects[ 0 ].object;
 			_plane.setFromNormalAndCoplanarPoint( _camera.getWorldDirection( _plane.normal ), _worldPosition.setFromMatrixPosition( _selected.matrixWorld ) );

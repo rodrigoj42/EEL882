@@ -33,6 +33,7 @@ function init() {
   renderer.shadowMap.enabled = false;
 
   new THREE.DragControls(objects, camera, renderer.domElement);
+  new THREE.ArcballControls(objects, camera, renderer.domElement);
 
   container.appendChild(renderer.domElement);
 
@@ -65,6 +66,21 @@ function createBoxes(numberOfBoxes) {
     object.rotation.x = Math.random() * 2 * Math.PI;
     object.rotation.y = Math.random() * 2 * Math.PI;
     object.rotation.z = Math.random() * 2 * Math.PI;
+
+    object.geometry.computeBoundingSphere();
+
+    var sphereGeometry = new THREE.SphereGeometry(
+      object.geometry.boundingSphere.radius * 1.2,
+      32, 32
+    );
+    var sphereMaterial = new THREE.MeshLambertMaterial({
+      color: 0xffffff,
+      transparent: true,
+      opacity: 0.5,
+      visible: false
+    })
+    var sphere = new THREE.Mesh(sphereGeometry, sphereMaterial);
+    object.add(sphere)
 
     scene.add(object);
     objects.push(object);
