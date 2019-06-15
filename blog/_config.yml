@@ -1,7 +1,0 @@
-markdown: kramdown
-highlighter: true
-permalink: date
-lsi: true
-exclude: ['README.markdown', 'README_FOR_COLLABORATORS.markdown', 'Gemfile.lock', 'Gemfile', 'Rakefile', 'LICENSE.txt']
-production: false
-paginate: 10
