@@ -6,86 +6,73 @@ init();
 animate();
 
 function init() {
-
   container = document.createElement( 'div' );
-  document.body.appendChild( container );
+  document.body.appendChild(container);
 
-  camera = new THREE.PerspectiveCamera( 70, window.innerWidth / window.innerHeight, 1, 5000 );
-  camera.position.z = 1000;
-
-  controls = new THREE.TrackballControls( camera );
-  controls.rotateSpeed = 1.0;
-  controls.zoomSpeed = 1.2;
-  controls.panSpeed = 0.8;
-  controls.noZoom = false;
-  controls.noPan = false;
-  controls.staticMoving = true;
-  controls.dynamicDampingFactor = 0.3;
+  camera = new THREE.PerspectiveCamera(70, window.innerWidth / window.innerHeight, 1, 5000);
+  camera.position.z = 0;
+  camera.lookAt(new THREE.Vector3(0,0,1));
 
   scene = new THREE.Scene();
-  scene.background = new THREE.Color( 0xf0f0f0 );
+  scene.background = new THREE.Color(0xe0e0e0);
 
-  scene.add( new THREE.AmbientLight( 0x505050 ) );
+  var spot = new THREE.SpotLight(0xffffff, 1.5);
+  spot.position.set(0, 0, 0);
+  spot.target.position.set(0, 0, 1);
+  spot.angle = 2 * Math.PI;
+  spot.castShadow = false;
 
-  var light = new THREE.SpotLight( 0xffffff, 1.5 );
-  light.position.set( 0, 500, 2000 );
-  light.angle = Math.PI / 9;
+  scene.add(new THREE.AmbientLight(0xffffff));
+  scene.add(spot);
 
-  light.castShadow = true;
-  light.shadow.camera.near = 1000;
-  light.shadow.camera.far = 4000;
-  light.shadow.mapSize.width = 1024;
-  light.shadow.mapSize.height = 1024;
+  objects = createBoxes(20);
 
-  scene.add( light );
+  renderer = new THREE.WebGLRenderer( { antialias: true } );
+  renderer.setPixelRatio( window.devicePixelRatio );
+  renderer.setSize( window.innerWidth, window.innerHeight );
+  renderer.shadowMap.enabled = false;
 
-  var geometry = new THREE.BoxBufferGeometry( 40, 40, 40 );
+  new THREE.DragControls(objects, camera, renderer.domElement);
 
-  for ( var i = 0; i < 200; i ++ ) {
+  container.appendChild(renderer.domElement);
 
-    var object = new THREE.Mesh( geometry, new THREE.MeshLambertMaterial( { color: Math.random() * 0xffffff } ) );
+  window.addEventListener('resize', onWindowResize, false);
+}
 
-    object.position.x = Math.random() * 1000 - 500;
-    object.position.y = Math.random() * 600 - 300;
-    object.position.z = Math.random() * 800 - 400;
+function createBoxes(numberOfBoxes) {
+  for (let i = 0; i < numberOfBoxes; i ++) {
+    let geometry = new THREE.BoxGeometry(40, 40, 40);
+
+    var mat =  new THREE.MeshLambertMaterial({
+      color: 0xffffff,
+      side: THREE.DoubleSide,
+      vertexColors: THREE.FaceColors
+    });
+    
+    for (let i = 0; i < geometry.faces.length/2; i++) {
+      let color = Math.random() * 0xffffff;
+      geometry.faces[i*2].color.setHex(color);
+      geometry.faces[1+i*2].color.setHex(color);
+    }
+
+    var object = new THREE.Mesh(geometry, mat);
+    object.name = `Box ${i}`
+
+    object.position.x = Math.random() * window.innerWidth/2 - window.innerWidth/4;
+    object.position.y = Math.random() * window.innerHeight/2 - window.innerHeight/4;
+    object.position.z = Math.random() * 400 + 200;
 
     object.rotation.x = Math.random() * 2 * Math.PI;
     object.rotation.y = Math.random() * 2 * Math.PI;
     object.rotation.z = Math.random() * 2 * Math.PI;
 
-    object.scale.x = Math.random() * 2 + 1;
-    object.scale.y = Math.random() * 2 + 1;
-    object.scale.z = Math.random() * 2 + 1;
-
-    object.castShadow = true;
-    object.receiveShadow = true;
-
-    scene.add( object );
-
-    objects.push( object );
-
+    scene.add(object);
+    objects.push(object);
   }
 
-  renderer = new THREE.WebGLRenderer( { antialias: true } );
-  renderer.setPixelRatio( window.devicePixelRatio );
-  renderer.setSize( window.innerWidth, window.innerHeight );
-
-  renderer.shadowMap.enabled = true;
-  renderer.shadowMap.type = THREE.PCFShadowMap;
-
-  container.appendChild( renderer.domElement );
-
-  var dragControls = new THREE.DragControls( objects, camera, renderer.domElement );
-  dragControls.addEventListener( 'dragstart', function () {
-    controls.enabled = false;
-  } );
-  dragControls.addEventListener( 'dragend', function () {
-    controls.enabled = true;
-  } );
-
-  window.addEventListener( 'resize', onWindowResize, false );
-
+  return objects
 }
+
 
 function onWindowResize() {
   camera.aspect = window.innerWidth / window.innerHeight;
@@ -99,6 +86,5 @@ function animate() {
 }
 
 function render() {
-  controls.update();
   renderer.render( scene, camera );
 }
