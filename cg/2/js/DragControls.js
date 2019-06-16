@@ -68,12 +68,17 @@ THREE.DragControls = function ( _objects, _camera, _domElement ) {
 		var intersects = _raycaster.intersectObjects( _objects );
 
 		if ( intersects.length > 0 ) {
-			var object = intersects[ 0 ].object;
-			_plane.setFromNormalAndCoplanarPoint( _camera.getWorldDirection( _plane.normal ), _worldPosition.setFromMatrixPosition( object.matrixWorld ) );
-			if ( _hovered !== object ) {
-				scope.dispatchEvent( { type: 'hoveron', object: object } );
-				_domElement.style.cursor = 'pointer';
-				_hovered = object;
+			let nonArcballIntersection = intersects.find(
+				(intersect) => intersect.object.name.slice(0,7) !== 'Arcball'
+			);
+			if (nonArcballIntersection) {
+				var object = nonArcballIntersection.object;
+				_plane.setFromNormalAndCoplanarPoint( _camera.getWorldDirection( _plane.normal ), _worldPosition.setFromMatrixPosition( object.matrixWorld ) );
+				if ( _hovered !== object ) {
+					scope.dispatchEvent( { type: 'hoveron', object: object } );
+					_domElement.style.cursor = 'pointer';
+					_hovered = object;
+				}
 			}
 		} else {
 			if ( _hovered !== null ) {
@@ -91,13 +96,18 @@ THREE.DragControls = function ( _objects, _camera, _domElement ) {
 		var intersects = _raycaster.intersectObjects( _objects );
 
 		if ( intersects.length > 0 ) {
-			_selected = intersects[0].object;
-			if ( _raycaster.ray.intersectPlane( _plane, _intersection ) ) {
-				_inverseMatrix.getInverse( _selected.parent.matrixWorld );
-				_offset.copy( _intersection ).sub( _worldPosition.setFromMatrixPosition( _selected.matrixWorld ) );
+			let nonArcballIntersection =  intersects.find(
+				(intersect) => intersect.object.name.slice(0,7) !== 'Arcball'
+			);
+			if (nonArcballIntersection) {
+				_selected = nonArcballIntersection.object;
+				if ( _raycaster.ray.intersectPlane( _plane, _intersection ) ) {
+					_inverseMatrix.getInverse( _selected.parent.matrixWorld );
+					_offset.copy( _intersection ).sub( _worldPosition.setFromMatrixPosition( _selected.matrixWorld ) );
+				}
+				_domElement.style.cursor = 'move';
+				scope.dispatchEvent( { type: 'dragstart', object: _selected } );
 			}
-			_domElement.style.cursor = 'move';
-			scope.dispatchEvent( { type: 'dragstart', object: _selected } );
 		}
 	}
 
@@ -140,14 +150,19 @@ THREE.DragControls = function ( _objects, _camera, _domElement ) {
 
 		var intersects = _raycaster.intersectObjects( _objects );
 		if ( intersects.length > 0 ) {
-			_selected = intersects[ 0 ].object;
-			_plane.setFromNormalAndCoplanarPoint( _camera.getWorldDirection( _plane.normal ), _worldPosition.setFromMatrixPosition( _selected.matrixWorld ) );
-			if ( _raycaster.ray.intersectPlane( _plane, _intersection ) ) {
-				_inverseMatrix.getInverse( _selected.parent.matrixWorld );
-				_offset.copy( _intersection ).sub( _worldPosition.setFromMatrixPosition( _selected.matrixWorld ) );
+			let nonArcballIntersection = intersects.find(
+				(intersect) => intersect.object.name.slice(0,7) !== 'Arcball'
+			);
+			if (nonArcballIntersection) {
+				_selected = nonArcballIntersection.object;
+				_plane.setFromNormalAndCoplanarPoint( _camera.getWorldDirection( _plane.normal ), _worldPosition.setFromMatrixPosition( _selected.matrixWorld ) );
+				if ( _raycaster.ray.intersectPlane( _plane, _intersection ) ) {
+					_inverseMatrix.getInverse( _selected.parent.matrixWorld );
+					_offset.copy( _intersection ).sub( _worldPosition.setFromMatrixPosition( _selected.matrixWorld ) );
+				}
+				_domElement.style.cursor = 'move';
+				scope.dispatchEvent( { type: 'dragstart', object: _selected } );
 			}
-			_domElement.style.cursor = 'move';
-			scope.dispatchEvent( { type: 'dragstart', object: _selected } );
 		}
 	}
 

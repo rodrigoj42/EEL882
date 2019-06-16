@@ -62,7 +62,7 @@ function createBoxes(numberOfBoxes) {
 
     object.position.x = Math.random() * window.innerWidth/2 - window.innerWidth/4;
     object.position.y = Math.random() * window.innerHeight/2 - window.innerHeight/4;
-    object.position.z = Math.random() * 6000// + 3000;
+    object.position.z = Math.random() * 1000;
 
     object.rotation.x = Math.random() * 2 * Math.PI;
     object.rotation.y = Math.random() * 2 * Math.PI;
