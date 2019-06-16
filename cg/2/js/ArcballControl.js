@@ -67,9 +67,10 @@ THREE.ArcballControls = function (_encompassingArcball, _camera, _domElement, _s
     if (_encompassingArcball.material.visible) {
       _intersection = _raycaster.intersectObject(_encompassingArcball)[0];
     } else {
-      let intersects = _raycaster.intersectObjects(visibleArcballs);
-      if (intersects.length > 0) {
-        _intersection = intersects[0]
+      let arcballIntersections = _raycaster.intersectObjects(visibleArcballs);
+      let boxIntersections = _raycaster.intersectObjects(_encompassingArcball.children);
+      if (arcballIntersections.length > 0 && boxIntersections.length == 0) {
+        _intersection = arcballIntersections[0]
       }
     }
   }
