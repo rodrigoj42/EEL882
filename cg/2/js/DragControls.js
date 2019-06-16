@@ -59,6 +59,7 @@ THREE.DragControls = function ( _objects, _camera, _domElement ) {
 		if ( _selected && scope.enabled ) {
 			if ( _raycaster.ray.intersectPlane( _plane, _intersection ) ) {
 				_selected.position.copy( _intersection.sub( _offset ).applyMatrix4( _inverseMatrix ) );
+				// recompute arcball center/size
 			}
 			scope.dispatchEvent( { type: 'drag', object: _selected } );
 			return;

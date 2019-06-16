@@ -1,5 +1,5 @@
 
-THREE.ArcballControls = function (_objectsGroup, _camera, _domElement, _scene) {
+THREE.ArcballControls = function (_encompassingArcball, _camera, _domElement, _scene) {
 
   var _plane = new THREE.Plane();
   var _raycaster = new THREE.Raycaster();
@@ -32,15 +32,10 @@ THREE.ArcballControls = function (_objectsGroup, _camera, _domElement, _scene) {
     _mouse.y = - ( ( event.clientY - rect.top ) / rect.height ) * 2 + 1;
     _raycaster.setFromCamera( _mouse, _camera );
 
-    let encompassingArcball = _objectsGroup.children.find(
-      (object) => object.name === 'Arcball'
-    );
-    if (encompassingArcball) {
-      _objectsGroup.remove(encompassingArcball)
-    }
-
-    if (!encompassingArcball) {
-      var intersects = _raycaster.intersectObjects(_objectsGroup.children);
+    if (_encompassingArcball.material.visible) {
+      _encompassingArcball.material.visible = false;
+    } else {
+      var intersects = _raycaster.intersectObjects(_encompassingArcball.children);
       if (intersects.length > 0) {
         _selected = intersects[0].object;
         _arcball = _selected.children.find(
@@ -52,23 +47,7 @@ THREE.ArcballControls = function (_objectsGroup, _camera, _domElement, _scene) {
           // do something
         }
       } else {
-        let {center, radius} = _objectsGroup.computeBoundingSphere();
-        let sphereGeometry = new THREE.SphereGeometry(
-          radius * 0.5,
-          32, 32
-        );
-        var sphereMaterial = new THREE.MeshLambertMaterial({
-          color: 0xffffff,
-          transparent: true,
-          opacity: 0.5,
-          visible: true
-        })
-        var sphere = new THREE.Mesh(sphereGeometry, sphereMaterial);
-        sphere.name = `Arcball`
-        sphere.position.x = center.x;
-        sphere.position.y = center.y;
-        sphere.position.z = center.z;
-        _objectsGroup.add(sphere);
+        _encompassingArcball.material.visible = true;
       }
     }
   }
@@ -81,18 +60,17 @@ THREE.ArcballControls = function (_objectsGroup, _camera, _domElement, _scene) {
     _mouse.y = - ( ( event.clientY - rect.top ) / rect.height ) * 2 + 1;
     _raycaster.setFromCamera( _mouse, _camera );
 
-    let encompassingArcballArray = _objectsGroup.children.filter(
-      (object) => object.name === 'Arcball'
-    );
-
-    let visible_arcballs = _objectsGroup.children
+    let visibleArcballs = _encompassingArcball.children
       .flatMap((boxes) => boxes.children)
       .filter((arcball) => arcball.material.visible)
-      .concat(encompassingArcballArray)
 
-    var intersects = _raycaster.intersectObjects(visible_arcballs);
-    if (intersects.length > 0) {
-      _intersection = intersects[0]
+    if (_encompassingArcball.material.visible) {
+      _intersection = _raycaster.intersectObject(_encompassingArcball)[0];
+    } else {
+      let intersects = _raycaster.intersectObjects(visibleArcballs);
+      if (intersects.length > 0) {
+        _intersection = intersects[0]
+      }
     }
   }
 
@@ -109,29 +87,39 @@ THREE.ArcballControls = function (_objectsGroup, _camera, _domElement, _scene) {
       let _selected = _intersection.object;
       if (_selected) {
         let newIntersection = new THREE.Vector3();
-        if (_raycaster.ray.intersectPlane(_plane, newIntersection)) {
+        if (_selected.name === 'Arcball') {
+          let intersects = _raycaster.intersectObject(_selected)
+          if (intersects.length > 0) {
+            newIntersection = intersects[0].point;
+          }
+        } else {
+          _raycaster.ray.intersectPlane(_plane, newIntersection);
+        }
+        if (newIntersection.z) {
           let rotationAxis = new THREE.Vector3().crossVectors(_intersection.point, newIntersection).normalize()
           let angle = _intersection.point.angleTo(newIntersection);
 
           if (rotationAxis && angle) {
-            angle *= -1 * 360 / (2 * Math.PI);
+            angle *= 360 / (2 * Math.PI);
+            rotationAxis.x *= -1;
+            rotationAxis.y *= -1;
+            rotationAxis.z *= -1;
             let quaternion = new THREE.Quaternion().setFromAxisAngle(rotationAxis, angle);
-            _intersection.object.parent.applyQuaternion(quaternion);
+            if (_selected.name === 'Arcball') {
+              _selected.applyQuaternion(quaternion);
+            } else {
+              _intersection.object.parent.applyQuaternion(quaternion);
+            }
             _intersection.point = newIntersection;
           }
         }
       }
 
-      let encompassingArcballArray = _objectsGroup.children.filter(
-        (object) => object.name === 'Arcball'
-      );
+      let visibleArcballs = _encompassingArcball.children
+        .flatMap((boxes) => boxes.children)
+        .filter((arcball) => arcball.material.visible);
 
-      let visible_arcballs = _objectsGroup.children
-      .flatMap((boxes) => boxes.children)
-      .filter((arcball) => arcball.material.visible)
-      .concat(encompassingArcballArray)
-
-      var _intersects = _raycaster.intersectObjects(visible_arcballs);
+      var _intersects = _raycaster.intersectObjects(visibleArcballs);
       if (_intersects.length > 0) {
         let arcballIntersection = _intersects.find(
           (intersect) => intersect.object.name.slice(0,7) === 'Arcball'
