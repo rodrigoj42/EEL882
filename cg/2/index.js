@@ -1,6 +1,5 @@
 var container;
 var camera, controls, scene, renderer;
-var objects = [];
 
 init();
 animate();
@@ -9,12 +8,12 @@ function init() {
   container = document.createElement( 'div' );
   document.body.appendChild(container);
 
-  camera = new THREE.PerspectiveCamera(70, window.innerWidth / window.innerHeight, 1, 5000);
+  camera = new THREE.PerspectiveCamera(10, window.innerWidth / window.innerHeight, 2000, 10000);
   camera.position.z = 0;
   camera.lookAt(new THREE.Vector3(0,0,1));
 
   scene = new THREE.Scene();
-  scene.background = new THREE.Color(0xe0e0e0);
+  scene.background = new THREE.Color(0x666666);
 
   var spot = new THREE.SpotLight(0xffffff, 1.5);
   spot.position.set(0, 0, 0);
@@ -25,15 +24,15 @@ function init() {
   scene.add(new THREE.AmbientLight(0xffffff));
   scene.add(spot);
 
-  objects = createBoxes(20);
+  var boxGroup = createBoxes(20);
 
   renderer = new THREE.WebGLRenderer( { antialias: true } );
   renderer.setPixelRatio( window.devicePixelRatio );
   renderer.setSize( window.innerWidth, window.innerHeight );
   renderer.shadowMap.enabled = false;
 
-  new THREE.DragControls(objects, camera, renderer.domElement);
-  new THREE.ArcballControls(objects, camera, renderer.domElement);
+  new THREE.DragControls(boxGroup.children, camera, renderer.domElement);
+  new THREE.ArcballControls(boxGroup, camera, renderer.domElement);
 
   container.appendChild(renderer.domElement);
 
@@ -41,6 +40,8 @@ function init() {
 }
 
 function createBoxes(numberOfBoxes) {
+  var boxGroup = new THREE.Group()
+
   for (let i = 0; i < numberOfBoxes; i ++) {
     let geometry = new THREE.BoxGeometry(40, 40, 40);
 
@@ -61,7 +62,7 @@ function createBoxes(numberOfBoxes) {
 
     object.position.x = Math.random() * window.innerWidth/2 - window.innerWidth/4;
     object.position.y = Math.random() * window.innerHeight/2 - window.innerHeight/4;
-    object.position.z = Math.random() * 400 + 200;
+    object.position.z = Math.random() * 6000// + 3000;
 
     object.rotation.x = Math.random() * 2 * Math.PI;
     object.rotation.y = Math.random() * 2 * Math.PI;
@@ -80,13 +81,46 @@ function createBoxes(numberOfBoxes) {
       visible: false
     })
     var sphere = new THREE.Mesh(sphereGeometry, sphereMaterial);
+    sphere.name = `Arcball ${i}`
     object.add(sphere)
 
-    scene.add(object);
-    objects.push(object);
+    boxGroup.add(object)
   }
 
-  return objects
+  boxGroup.computeBoundingSphere = function() {
+
+    childrenX = this.children.map((children) => children.position.x)
+    childrenY = this.children.map((children) => children.position.y)
+  
+    minX = Math.min(...childrenX);
+    maxX = Math.max(...childrenX);
+    minY = Math.min(...childrenY);
+    maxY = Math.max(...childrenY);
+  
+    boxGroupLimits = [
+      {x: minX, y: minY},
+      {x: minX, y: maxY},
+      {x: maxX, y: minY},
+      {x: maxX, y: maxY}
+    ]
+
+    this.boundingSphere = {
+      center: new THREE.Vector2(
+        childrenX.reduce((acc, cur) => acc + cur)/childrenX.length,
+        childrenY.reduce((acc, cur) => acc + cur)/childrenY.length,
+      ),
+      radius: Math.max(
+        ...boxGroupLimits.map((point) => boxGroupCenter.distanceTo(point))
+      )
+    }
+
+    return this.boundingSphere
+  }
+
+  boxGroup.position.z = 3000;
+
+  scene.add(boxGroup);
+  return boxGroup
 }
 
 

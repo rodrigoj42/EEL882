@@ -1,11 +1,12 @@
 
-THREE.ArcballControls = function (_objects, _camera, _domElement) {
+THREE.ArcballControls = function (_objectsGroup, _camera, _domElement) {
 
   var _raycaster = new THREE.Raycaster();
   var _mouse = new THREE.Vector2();
+  var _arcball = null;
 
   function activate() {
-    _domElement.addEventListener('mousedown', onMouseClick);
+    _domElement.addEventListener('dblclick', onMouseClick);
   }
 
   function onMouseClick(event) {
@@ -16,12 +17,15 @@ THREE.ArcballControls = function (_objects, _camera, _domElement) {
     _mouse.y = - ( ( event.clientY - rect.top ) / rect.height ) * 2 + 1;
     _raycaster.setFromCamera( _mouse, _camera );
 
-    var intersects = _raycaster.intersectObjects(_objects);
+    var intersects = _raycaster.intersectObjects(_objectsGroup.children);
     if (intersects.length > 0) {
       _selected = intersects[0].object;
-      _selected.children.forEach(children => {
-        children.material.visible = !children.material.visible;
-      });
+      _arcball = _selected.children.find(
+        (children) => children.name.slice(0,7) === 'Arcball'
+      );
+      _arcball.material.visible = !_arcball.material.visible;
+    } else {
+      
     }
   }
 
