@@ -32,7 +32,7 @@ function init() {
   renderer.shadowMap.enabled = false;
 
   new THREE.DragControls(boxGroup.children, camera, renderer.domElement);
-  new THREE.ArcballControls(boxGroup, camera, renderer.domElement);
+  new THREE.ArcballControls(boxGroup, camera, renderer.domElement, scene);
 
   container.appendChild(renderer.domElement);
 
@@ -108,11 +108,11 @@ function createBoxes(numberOfBoxes) {
       center: new THREE.Vector2(
         childrenX.reduce((acc, cur) => acc + cur)/childrenX.length,
         childrenY.reduce((acc, cur) => acc + cur)/childrenY.length,
-      ),
-      radius: Math.max(
-        ...boxGroupLimits.map((point) => boxGroupCenter.distanceTo(point))
       )
     }
+    this.boundingSphere.radius = Math.max(
+      ...boxGroupLimits.map((point) => this.boundingSphere.center.distanceTo(point))
+    )
 
     return this.boundingSphere
   }
