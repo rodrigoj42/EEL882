@@ -60,9 +60,10 @@ function createBoxes(numberOfBoxes) {
     var object = new THREE.Mesh(geometry, mat);
     object.name = `Box ${i}`
 
+    let zSize = Math.min(window.innerHeight, window.innerWidth);
     object.position.x = Math.random() * window.innerWidth/2 - window.innerWidth/4;
     object.position.y = Math.random() * window.innerHeight/2 - window.innerHeight/4;
-    object.position.z = Math.random() * 1000;
+    object.position.z = Math.random() * 2*zSize + zSize;
 
     object.rotation.x = Math.random() * 2 * Math.PI;
     object.rotation.y = Math.random() * 2 * Math.PI;
@@ -91,23 +92,31 @@ function createBoxes(numberOfBoxes) {
 
     childrenX = this.children.map((children) => children.position.x)
     childrenY = this.children.map((children) => children.position.y)
+    childrenZ = this.children.map((children) => children.position.z)
   
     minX = Math.min(...childrenX);
     maxX = Math.max(...childrenX);
     minY = Math.min(...childrenY);
     maxY = Math.max(...childrenY);
+    minZ = Math.min(...childrenZ);
+    maxZ = Math.min(...childrenZ);
   
     boxGroupLimits = [
-      {x: minX, y: minY},
-      {x: minX, y: maxY},
-      {x: maxX, y: minY},
-      {x: maxX, y: maxY}
+      {x: minX, y: minY, z: minZ},
+      {x: minX, y: maxY, z: maxZ},
+      {x: maxX, y: minY, z: minZ},
+      {x: maxX, y: maxY, z: maxZ},
+      {x: minX, y: minY, z: minZ},
+      {x: minX, y: maxY, z: maxZ},
+      {x: maxX, y: minY, z: minZ},
+      {x: maxX, y: maxY, z: maxZ}
     ]
 
     this.boundingSphere = {
-      center: new THREE.Vector2(
+      center: new THREE.Vector3(
         childrenX.reduce((acc, cur) => acc + cur)/childrenX.length,
         childrenY.reduce((acc, cur) => acc + cur)/childrenY.length,
+        childrenZ.reduce((acc, cur) => acc + cur)/childrenZ.length
       )
     }
     this.boundingSphere.radius = Math.max(
