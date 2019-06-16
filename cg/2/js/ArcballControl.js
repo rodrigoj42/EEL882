@@ -103,7 +103,6 @@ THREE.ArcballControls = function (_encompassingArcball, _camera, _domElement, _s
             angle *= 360 / (2 * Math.PI);
             rotationAxis.x *= -1;
             rotationAxis.y *= -1;
-            rotationAxis.z *= -1;
             let quaternion = new THREE.Quaternion().setFromAxisAngle(rotationAxis, angle);
             if (_selected.name === 'Arcball') {
               _selected.applyQuaternion(quaternion);
