@@ -7,6 +7,7 @@ THREE.ArcballControls = function (_encompassingArcball, _camera, _domElement, _s
   var _arcball = null;
   var _intersection = null;
   var _worldPosition = new THREE.Vector3();
+  var _inverseMatrix = new THREE.Matrix4();
 
   function activate() {
     _domElement.addEventListener('dblclick', onDoubleClick);
@@ -97,18 +98,16 @@ THREE.ArcballControls = function (_encompassingArcball, _camera, _domElement, _s
           _raycaster.ray.intersectPlane(_plane, newIntersection);
         }
         if (newIntersection.z) {
-          let rotationAxis = new THREE.Vector3().crossVectors(_intersection.point, newIntersection).normalize()
-          let angle = _intersection.point.angleTo(newIntersection);
+          let rotationAxis = new THREE.Vector3().crossVectors(newIntersection, _intersection.point).normalize()
+          let angle = newIntersection.angleTo(_intersection.point);
 
           if (rotationAxis && angle) {
             angle *= 360 / (2 * Math.PI);
-            rotationAxis.x *= -1;
-            rotationAxis.y *= -1;
             let quaternion = new THREE.Quaternion().setFromAxisAngle(rotationAxis, angle);
             if (_selected.name === 'Arcball') {
               _selected.applyQuaternion(quaternion);
             } else {
-              _intersection.object.parent.applyQuaternion(quaternion);
+              _selected.parent.applyQuaternion(quaternion);
             }
             _intersection.point = newIntersection;
           }
