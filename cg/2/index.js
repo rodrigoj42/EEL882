@@ -93,7 +93,7 @@ function createObjects(numberOfBoxes) {
     object.geometry.computeBoundingSphere();
 
     let childSphereGeometry = new THREE.SphereGeometry(
-      object.geometry.boundingSphere.radius * 1.2,
+      object.geometry.boundingSphere.radius * 1.6,
       32, 32
     );
     let sphereMaterial = new THREE.MeshLambertMaterial({
