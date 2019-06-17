@@ -8,7 +8,7 @@ function init() {
   container = document.createElement( 'div' );
   document.body.appendChild(container);
 
-  camera = new THREE.PerspectiveCamera(10, window.innerWidth / window.innerHeight, 2000, 10000);
+  camera = new THREE.PerspectiveCamera(10, window.innerWidth / window.innerHeight, 100, 100000);
   camera.position.z = 0;
   camera.lookAt(new THREE.Vector3(0,0,1));
 
@@ -37,6 +37,11 @@ function init() {
   container.appendChild(renderer.domElement);
 
   window.addEventListener('resize', onWindowResize, false);
+  window.addEventListener('wheel', onScroll)
+}
+
+function onScroll(event) {
+  camera.position.z += event.deltaY
 }
 
 function createObjects(numberOfBoxes) {

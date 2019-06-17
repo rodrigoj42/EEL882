@@ -7,7 +7,7 @@ THREE.ArcballControls = function (_encompassingArcball, _camera, _domElement, _s
   var _arcball = null;
   var _intersection = null;
   var _worldPosition = new THREE.Vector3();
-  var _inverseMatrix = new THREE.Matrix4();
+  var _inverseQuaternion = new THREE.Quaternion();
 
   function activate() {
     _domElement.addEventListener('dblclick', onDoubleClick);
@@ -107,7 +107,10 @@ THREE.ArcballControls = function (_encompassingArcball, _camera, _domElement, _s
             if (_selected.name === 'Arcball') {
               _selected.applyQuaternion(quaternion);
             } else {
+              _inverseQuaternion.copy(_encompassingArcball.quaternion).inverse()
+              _selected.parent.applyQuaternion(_inverseQuaternion);
               _selected.parent.applyQuaternion(quaternion);
+              _selected.parent.applyQuaternion(_encompassingArcball.quaternion);
             }
             _intersection.point = newIntersection;
           }
