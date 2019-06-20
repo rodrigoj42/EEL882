@@ -31,8 +31,8 @@ function init() {
   renderer.setSize( window.innerWidth, window.innerHeight );
   renderer.shadowMap.enabled = false;
 
-  new THREE.DragControls(sphere.children, camera, renderer.domElement);
-  new THREE.ArcballControls(sphere, camera, renderer.domElement, scene);
+  new THREE.DragControls(scene, camera, renderer.domElement);
+  new THREE.ArcballControls(scene, camera, renderer.domElement);
 
   container.appendChild(renderer.domElement);
 
@@ -54,7 +54,7 @@ function createObjects(numberOfBoxes) {
   })
   let sphereGeometry = new THREE.SphereGeometry(
     radius,
-    32, 32
+    64, 64
   );
   let sphere = new THREE.Mesh(sphereGeometry, sphereMaterial);
   sphere.name = `Arcball`

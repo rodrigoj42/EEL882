@@ -1,5 +1,9 @@
 
-THREE.ArcballControls = function (_encompassingArcball, _camera, _domElement, _scene) {
+THREE.ArcballControls = function (_scene, _camera, _domElement) {
+
+  var _encompassingArcball = _scene.children.find(
+		(element) => element.name == "Arcball"
+	);
 
   var _plane = new THREE.Plane();
   var _raycaster = new THREE.Raycaster();

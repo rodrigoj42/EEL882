@@ -4,12 +4,11 @@
  * Running this will allow you to drag three.js objects around the screen.
  */
 
-THREE.DragControls = function ( _objects, _camera, _domElement ) {
+THREE.DragControls = function ( _scene, _camera, _domElement ) {
 
-	if ( _objects instanceof THREE.Camera ) {
-		console.warn( 'THREE.DragControls: Constructor now expects ( objects, camera, domElement )' );
-		var temp = _objects; _objects = _camera; _camera = temp;
-	}
+	var _encompassingArcball = _scene.children.find(
+		(element) => element.name == "Arcball"
+	);
 
 	var _plane = new THREE.Plane();
 	var _raycaster = new THREE.Raycaster();
@@ -66,7 +65,7 @@ THREE.DragControls = function ( _objects, _camera, _domElement ) {
 		}
 
 		_raycaster.setFromCamera( _mouse, _camera );
-		var intersects = _raycaster.intersectObjects( _objects );
+		var intersects = _raycaster.intersectObjects( _encompassingArcball.children );
 
 		if ( intersects.length > 0 ) {
 			let nonArcballIntersection = intersects.find(
@@ -94,9 +93,9 @@ THREE.DragControls = function ( _objects, _camera, _domElement ) {
 		event.preventDefault();
 
 		_raycaster.setFromCamera( _mouse, _camera );
-		var intersects = _raycaster.intersectObjects( _objects );
+		var intersects = _raycaster.intersectObjects( _encompassingArcball.children );
 
-		if ( intersects.length > 0 ) {
+		if ( intersects.length > 0 && !_encompassingArcball.material.visible) {
 			let nonArcballIntersection =  intersects.find(
 				(intersect) => intersect.object.name.slice(0,7) !== 'Arcball'
 			);
@@ -149,7 +148,7 @@ THREE.DragControls = function ( _objects, _camera, _domElement ) {
 		_mouse.y = - ( ( event.clientY - rect.top ) / rect.height ) * 2 + 1;
 		_raycaster.setFromCamera( _mouse, _camera );
 
-		var intersects = _raycaster.intersectObjects( _objects );
+		var intersects = _raycaster.intersectObjects( _encompassingArcball.children );
 		if ( intersects.length > 0 ) {
 			let nonArcballIntersection = intersects.find(
 				(intersect) => intersect.object.name.slice(0,7) !== 'Arcball'
